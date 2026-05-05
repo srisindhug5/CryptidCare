@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="CryptidCare.Api/CryptidCare.Api.csproj" />
+  <Project Path="CryptidCare.Application/CryptidCare.Application.csproj" />
+  <Project Path="CryptidCare.Data/CryptidCare.Data.csproj" />
+  <Project Path="CryptidCare.Domain/CryptidCare.Domain.csproj" />
+  <Project Path="CryptidCare.Tests/CryptidCare.Tests.csproj" />
+</Solution>
