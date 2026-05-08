@@ -7,14 +7,14 @@ Secure and extensible claims adjudication API for mythical patients, built with 
 | Expectation | Where it lives |
 |-------------|----------------|
 | **.NET 10** | Every project targets `net10.0` in its `.csproj`. |
-| **MS SQL Server; Docker recommended** | `docker-compose.yml` runs SQL Server 2022 (`mcr.microsoft.com/mssql/server:2022-latest`) on port **1433** with a persisted volume. Local defaults in `appsettings*.json` point at that instance. |
+| **MS SQL Server; Docker recommended** | `docker-compose.yml` runs SQL Server 2022 (`mcr.microsoft.com/mssql/server:2022-latest`) on port **1433** with a persisted volume. Checked-in `appsettings*.json` defaults use **SQL Server LocalDB** so you can run without Docker; override `ConnectionStrings:ClaimsDatabase` (env var `ConnectionStrings__ClaimsDatabase`) to point at `localhost,1433` when using Compose. |
 | **Unit tests (meaningful core coverage)** | `CryptidCare.Tests` — `ClaimAdjudicationService` with **mocked** `IPatientRepository` / `IMedicineRepository` / `IClaimRepository`; covers rules (werewolf/silver, hydra heads, inactive patient), adjusters (hydra multiply vs non-hydra no-op), validation, not-found paths, rule pipeline short-circuit, and persisted rule audit entries. Run: `dotnet test CryptidCare.slnx`. |
 | **Minimal architecture documentation** | This file: **Architecture notes**, **Design decisions and tradeoffs**, and the **Mermaid** claim flow below. Deeper reading is split into [`ARCHITECTURE.md`](ARCHITECTURE.md) (why), [`CONFIGURATION.md`](CONFIGURATION.md) (settings & secrets), and [`DEVELOPER_GUIDELINES.md`](DEVELOPER_GUIDELINES.md) (how to add a rule). |
 
 ## Project structure
 
 - `CryptidCare.Api` - HTTP endpoints; `Configuration/Startup.cs` registers services via `WebApplicationBuilder` and configures the pipeline in `Configure`; OpenAPI helpers stay in `SwaggerExtensions.cs`.
-- `CryptidCare.Application` - `Configuration/Startup.ConfigureServices` (adjudication, rules, adjusters); optional `IConfiguration` for future options / HttpClient settings.
+- `CryptidCare.Application` - `Configuration/Startup.ConfigureServices` registers adjudication, rules, and quantity adjusters via DI.
 - `CryptidCare.Domain` - entities and enums (no DI; stays dependency-free).
 - `CryptidCare.Data` - `Configuration/Startup`: `ConfigureServices` (EF, repositories) and `ApplyPersistenceAsync` (migrations + seed).
 - `CryptidCare.Tests` - unit tests for core business logic.
@@ -45,7 +45,7 @@ flowchart LR
 - **Rule audit trail (`ClaimRuleEvaluation`)** — Each rule outcome is persisted for explainability (useful for support, disputes, and debugging). The tradeoff is extra rows per claim and slightly more write work; for high volume, you could sample or archive old evaluations.
 - **Layered projects** — Domain stays free of EF and HTTP concerns; Application holds orchestration; the Data project owns persistence. This improves testability at the cost of more projects and boilerplate.
 - **Migrations at startup** — Convenient for local demos and the take-home; in production you would typically run migrations in a deployment step or job, not on every app start.
-- **Auth** — Not in scope for the timebox. Production would add API keys or JWT, rate limiting, and integration tests (e.g. Testcontainers).
+- **Auth** — API key (`X-Api-Key`) is implemented as a deliberate stub so claims endpoints are not anonymous; production would replace it with JWT bearer + OIDC (or mTLS), rate limiting, and integration tests (e.g. Testcontainers).
 - **Observability** — Application Insights (OpenTelemetry-based SDK), request-scoped logging with correlation id, HTTP request logging (metadata only, no bodies), and global exception mapping to Problem Details.
 
 ## Azure Application Insights
@@ -63,16 +63,20 @@ If the connection string is empty, the app runs normally; telemetry is not sent.
 
 **Correlation:** each request gets an `X-Correlation-ID` (or accepts an incoming value). The same id is added to logger scopes and to the current `Activity` as tag `CorrelationId`, which appears on distributed traces in Application Insights. Request/response **bodies are not logged** (PHI / prescription safety).
 
-A direct reference to `OpenTelemetry.Api` 1.15.3 is pinned to address a transitive vulnerability reported for 1.15.1.
-
 ## Configuration files and environments
 
 Configuration loads in order: `appsettings.json`, then `appsettings.{Environment}.json`, then environment variables (which override JSON using `__` for nested keys, e.g. `ConnectionStrings__ClaimsDatabase`).
 
 | File | Logging | Connection string |
 |------|---------|---------------------|
-| `appsettings.json` | `Default: Information`; framework namespaces `Warning`; `CryptidCare: Information` | Docker-style local SQL pointing at `localhost,1433` (matches `docker-compose.yml`) |
-| `appsettings.Development.json` | `Default: Information` (override locally as needed) | Inherits from `appsettings.json` (override with environment variable or [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets)) |
+| `appsettings.json` | `Default: Information`; framework namespaces `Warning`; `CryptidCare: Information` | SQL Server **LocalDB** (`Server=(localdb)\\MSSQLLocalDB;…`) — works without Docker on Windows. |
+| `appsettings.Development.json` | `Default: Information` (override locally as needed) | Same LocalDB default as base; also sets dev `Authentication:ApiKey`. Override connection string via env var or [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets). |
+
+To use the Docker SQL Server from `docker-compose.yml` instead, set:
+
+`ConnectionStrings__ClaimsDatabase=Server=localhost,1433;Database=CryptidCareClaims;User Id=sa;Password=StrongPassword!123;TrustServerCertificate=true`
+
+(match `MSSQL_SA_PASSWORD` in Compose if you change the password). The **Staging** and **Production** profiles in `launchSettings.json` already set this string for local smoke tests.
 
 For Staging/Production, do **not** check connection strings into source control — supply them via environment variables (e.g. `ConnectionStrings__ClaimsDatabase`) or Key Vault. `launchSettings.json` includes optional **Staging** and **Production** profiles for local checks that set the Docker SQL connection string in their environment block; remove those values from launch profiles in real deployments and supply secrets through your platform instead.
 
@@ -107,13 +111,16 @@ This can be inspected through `GET /api/claims/{id}`.
 
 ## Running locally
 
-**Database:** Running SQL Server in Docker is strongly recommended so the API, compose file, and documented password/port stay aligned.
+**Database (pick one):**
 
-1. Start SQL Server:
-   - `docker compose up -d`
-2. Apply migrations and run API (migrations + seed run automatically on startup):
+1. **LocalDB (default, no Docker)** — Ensure SQL Server LocalDB is installed (Visual Studio / SQL Server Express LocalDB). The checked-in connection strings already target `(localdb)\\MSSQLLocalDB`.
+2. **Docker SQL Server** — Run `docker compose up -d`, then point the API at the container (see connection-string override in **Configuration files and environments** above). Password defaults align with `docker-compose.yml` (`MSSQL_SA_PASSWORD`, default `StrongPassword!123`).
+
+Then:
+
+1. Run the API (migrations + seed run automatically on startup):
    - `dotnet run --project CryptidCare.Api`
-3. Run tests:
+2. Run tests:
    - `dotnet test CryptidCare.slnx`
 
 The API applies migrations and seeds demo data at startup (see `Program.cs` calling `Data.Configuration.Startup.ApplyPersistenceAsync`).

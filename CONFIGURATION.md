@@ -1,11 +1,8 @@
 # Configuration Guide — CryptidCare Claims API
 
-The API binds settings from the standard ASP.NET Core configuration sources, in priority order:
+The API binds settings through the standard ASP.NET Core configuration chain. **Later sources override earlier ones** (typical host order): `appsettings.json`, then `appsettings.{Environment}.json`, then User Secrets when `ASPNETCORE_ENVIRONMENT` is Development, then environment variables (`__` nests keys, e.g. `ConnectionStrings__ClaimsDatabase`), then command-line arguments.
 
-1. Environment variables (use `__` to nest, e.g. `ConnectionStrings__ClaimsDatabase`)
-2. User Secrets (Development environment only)
-3. `appsettings.{Environment}.json`
-4. `appsettings.json` (the defaults checked into the repo)
+You usually override JSON defaults with environment variables or User Secrets in Development.
 
 A secret manager such as Azure Key Vault can be added on top via host configuration; this is **not** wired by default.
 
@@ -17,13 +14,21 @@ A secret manager such as Azure Key Vault can be added on top via host configurat
 |---|---|
 | `ConnectionStrings:ClaimsDatabase` | SQL Server connection string used by EF Core. |
 
-The default value in `appsettings.json` matches the credentials in `docker-compose.yml`, so a fresh clone runs end-to-end with no extra setup:
+Checked-in `appsettings.json` and `appsettings.Development.json` default to **SQL Server LocalDB** so you can run on Windows without Docker:
+
+```
+Server=(localdb)\MSSQLLocalDB;Database=CryptidCareClaims;Integrated Security=true;TrustServerCertificate=true
+```
+
+To run against the container from `docker-compose.yml` instead, override `ConnectionStrings:ClaimsDatabase` (same user/password as `MSSQL_SA_PASSWORD`, default `StrongPassword!123`):
 
 ```
 Server=localhost,1433;Database=CryptidCareClaims;User Id=sa;Password=StrongPassword!123;TrustServerCertificate=true
 ```
 
-> **Production:** override this from environment variables or a secret manager and use `TrustServerCertificate=false` against a properly issued certificate.
+The **Staging** and **Production** profiles in `launchSettings.json` set the Docker-style string for local checks.
+
+> **Production:** override the connection string from environment variables or a secret manager and use `TrustServerCertificate=false` against a properly issued certificate.
 
 ### Override examples
 

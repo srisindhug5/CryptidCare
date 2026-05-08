@@ -80,7 +80,7 @@ Rule ordering is the DI registration order. Cheap/safety-critical rules are regi
 
 ## 4. Persistence
 
-- **EF Core 10** against SQL Server 2022 (run locally via `docker-compose`).
+- **EF Core 10** against SQL Server (LocalDB by default in checked-in settings; SQL Server 2022 in Docker via `docker-compose.yml` when you override the connection string).
 - One `DbContext` (`ClaimsDbContext`) with sets for `Patients`, `Medicines`, `Claims`, and `ClaimRuleEvaluations`.
 - Per-entity `IEntityTypeConfiguration` classes hold mapping (precision on `decimal`, indexes on `Claim.PatientId`/`MedicineId`/`Status`, cascade from `Claim` → `ClaimRuleEvaluation`).
 - Repositories (`PatientRepository`, `MedicineRepository`, `ClaimRepository`) expose just the queries the application layer actually needs.
@@ -116,9 +116,9 @@ Repositories are mocked with Moq, so the tests run without a database. The rules
 
 ## 7. Configuration
 
-Standard ASP.NET Core configuration sources, in priority order: environment variables → User Secrets (Development only) → `appsettings.{Environment}.json` → `appsettings.json`.
+Later configuration sources **override** earlier ones (standard ASP.NET Core host defaults): `appsettings.json`, then `appsettings.{Environment}.json`, then User Secrets when Development, then environment variables, then command-line arguments.
 
-The single critical setting is `ConnectionStrings:ClaimsDatabase`. The default in `appsettings.json` matches the credentials in `docker-compose.yml` so a fresh clone runs end-to-end with no extra setup. Production deployments are expected to override the connection string and the optional `ApplicationInsights:ConnectionString` via environment variables or a secret manager.
+The single critical setting is `ConnectionStrings:ClaimsDatabase`. Checked-in defaults use **SQL Server LocalDB** for a Windows machine without Docker; override to the `docker-compose.yml` SQL Server connection string when running the container locally. Production deployments should inject the connection string and optional `ApplicationInsights:ConnectionString` via environment variables or a secret manager.
 
 See `CONFIGURATION.md` for the full list of settings and how to override them.
 
