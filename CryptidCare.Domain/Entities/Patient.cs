@@ -1,6 +1,6 @@
-using CryptidCare.Claims.Domain.Enums;
+using CryptidCare.Domain.Enums;
 
-namespace CryptidCare.Claims.Domain.Entities;
+namespace CryptidCare.Domain.Entities;
 
 /// <summary>
 /// A mythical patient eligible for Cryptid-Care pharmacy claims.

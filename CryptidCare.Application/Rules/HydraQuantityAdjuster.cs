@@ -1,7 +1,7 @@
-using CryptidCare.Claims.Application.Contracts;
-using CryptidCare.Claims.Domain.Enums;
+using CryptidCare.Application.Contracts;
+using CryptidCare.Domain.Enums;
 
-namespace CryptidCare.Claims.Application.Rules;
+namespace CryptidCare.Application.Rules;
 
 /// <summary>
 /// Multiplies effective quantity by head count for Hydra patients.

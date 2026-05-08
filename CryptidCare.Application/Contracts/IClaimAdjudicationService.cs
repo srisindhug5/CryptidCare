@@ -1,6 +1,6 @@
-using CryptidCare.Claims.Application.Models;
+using CryptidCare.Application.Models;
 
-namespace CryptidCare.Claims.Application.Contracts;
+namespace CryptidCare.Application.Contracts;
 
 /// <summary>
 /// Orchestrates validation, rules, adjustments, pricing, and persistence for a claim submission.

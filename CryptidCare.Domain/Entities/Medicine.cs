@@ -1,4 +1,4 @@
-namespace CryptidCare.Claims.Domain.Entities;
+namespace CryptidCare.Domain.Entities;
 
 /// <summary>
 /// A formulary item that can appear on a prescription claim.

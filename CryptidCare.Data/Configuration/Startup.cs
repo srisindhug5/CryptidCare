@@ -1,11 +1,11 @@
-using CryptidCare.Claims.Application.Abstractions;
-using CryptidCare.Claims.Data.Persistence;
-using CryptidCare.Claims.Data.Repositories;
+using CryptidCare.Application.Abstractions;
+using CryptidCare.Data.Persistence;
+using CryptidCare.Data.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace CryptidCare.Claims.Data.Configuration;
+namespace CryptidCare.Data.Configuration;
 
 /// <summary>
 /// Data layer host setup: EF Core, repositories, and post-build persistence actions (migrations, seeding).

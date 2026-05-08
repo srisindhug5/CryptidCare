@@ -1,4 +1,4 @@
-namespace CryptidCare.Claims.Application.Models;
+namespace CryptidCare.Application.Models;
 
 /// <summary>
 /// Input for submitting a prescription claim from a pharmacy.

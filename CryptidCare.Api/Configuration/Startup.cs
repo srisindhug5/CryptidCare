@@ -1,14 +1,20 @@
 using AutoMapper;
-using CryptidCare.Claims.Api.ExceptionHandling;
-using CryptidCare.Claims.Api.Mapping;
-using CryptidCare.Claims.Api.Middleware;
+using CryptidCare.Api.Authentication;
+using CryptidCare.Api.ExceptionHandling;
+using CryptidCare.Api.HealthChecks;
+using CryptidCare.Api.Mapping;
+using CryptidCare.Api.Middleware;
+using CryptidCare.Data.Persistence;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpLogging;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 
-namespace CryptidCare.Claims.Api.Configuration;
+namespace CryptidCare.Api.Configuration;
 
 /// <summary>
 /// API host setup: cross-cutting services, MVC, OpenAPI, and HTTP pipeline.
@@ -64,6 +70,13 @@ public static class Startup
 
         services.AddExceptionHandler<GlobalExceptionHandler>();
 
+        services
+            .AddAuthentication(ApiKeyAuthenticationOptions.SchemeName)
+            .AddScheme<ApiKeyAuthenticationOptions, ApiKeyAuthenticationHandler>(
+                ApiKeyAuthenticationOptions.SchemeName,
+                _ => { });
+        services.AddAuthorization();
+
         services.AddControllers();
         services.Configure<ApiBehaviorOptions>(options =>
         {
@@ -93,6 +106,10 @@ public static class Startup
 
         services.AddEndpointsApiExplorer();
         services.AddCryptidCareSwagger();
+
+        services.AddHealthChecks()
+            .AddCheck<ClaimsApiHealthCheck>("claims_api", tags: ["live"])
+            .AddDbContextCheck<ClaimsDbContext>("database", tags: ["ready"]);
 
         services.AddSingleton(sp =>
         {
@@ -126,7 +143,18 @@ public static class Startup
         app.UseStatusCodePages();
         app.UseHttpsRedirection();
         app.UseHttpLogging();
+        app.UseAuthentication();
+        app.UseAuthorization();
         app.MapControllers();
+        app.MapHealthChecks("/health").AllowAnonymous();
+        app.MapHealthChecks("/health/ready", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+        {
+            Predicate = check => check.Tags.Contains("ready")
+        }).AllowAnonymous();
+        app.MapHealthChecks("/health/live", new Microsoft.AspNetCore.Diagnostics.HealthChecks.HealthCheckOptions
+        {
+            Predicate = check => check.Tags.Contains("live")
+        }).AllowAnonymous();
     }
 
     private static bool HasApplicationInsightsConnectionString(IConfiguration configuration)

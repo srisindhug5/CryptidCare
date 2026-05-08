@@ -1,4 +1,4 @@
-namespace CryptidCare.Claims.Domain.Enums;
+namespace CryptidCare.Domain.Enums;
 
 /// <summary>
 /// Lifecycle state of a claim after adjudication.

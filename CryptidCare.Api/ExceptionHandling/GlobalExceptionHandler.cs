@@ -1,9 +1,9 @@
-using CryptidCare.Claims.Api.Middleware;
+using CryptidCare.Api.Middleware;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace CryptidCare.Claims.Api.ExceptionHandling;
+namespace CryptidCare.Api.ExceptionHandling;
 
 /// <summary>
 /// Maps unhandled exceptions to <see cref="ProblemDetails"/> with safe details outside Development.

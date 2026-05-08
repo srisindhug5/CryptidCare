@@ -1,6 +1,6 @@
-using CryptidCare.Claims.Domain.Entities;
+using CryptidCare.Domain.Entities;
 
-namespace CryptidCare.Claims.Application.Abstractions;
+namespace CryptidCare.Application.Abstractions;
 
 /// <summary>
 /// Persists and loads claims and related audit rows.

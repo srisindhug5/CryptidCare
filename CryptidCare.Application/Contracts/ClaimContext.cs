@@ -1,6 +1,6 @@
-using CryptidCare.Claims.Domain.Entities;
+using CryptidCare.Domain.Entities;
 
-namespace CryptidCare.Claims.Application.Contracts;
+namespace CryptidCare.Application.Contracts;
 
 /// <summary>
 /// Mutable working state passed through the rule pipeline and quantity adjusters.

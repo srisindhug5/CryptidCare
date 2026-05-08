@@ -1,7 +1,7 @@
-using CryptidCare.Claims.Domain.Entities;
+using CryptidCare.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace CryptidCare.Claims.Data.Persistence;
+namespace CryptidCare.Data.Persistence;
 
 /// <summary>
 /// Entity Framework Core database context for claims, patients, medicines, and rule audits.

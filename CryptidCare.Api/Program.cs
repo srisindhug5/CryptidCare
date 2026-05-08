@@ -1,19 +1,17 @@
-var builder = WebApplication.CreateBuilder(args);
+using ApiStartup = CryptidCare.Api.Configuration.Startup;
+using ApplicationStartup = CryptidCare.Application.Configuration.Startup;
+using DataStartup = CryptidCare.Data.Configuration.Startup;
 
-// Add services to the container.
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
-builder.Services.AddOpenApi();
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-var app = builder.Build();
+ApiStartup.ConfigureServices(builder);
+ApplicationStartup.ConfigureServices(builder.Services);
+DataStartup.ConfigureServices(builder.Services, builder.Configuration);
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.MapOpenApi();
-}
+WebApplication app = builder.Build();
 
-app.UseHttpsRedirection();
+await DataStartup.ApplyPersistenceAsync(app.Services).ConfigureAwait(false);
 
-app.Run();
+ApiStartup.Configure(app);
 
-
+await app.RunAsync().ConfigureAwait(false);

@@ -1,4 +1,4 @@
-namespace CryptidCare.Claims.Domain.Enums;
+namespace CryptidCare.Domain.Enums;
 
 /// <summary>
 /// Mythical species; drives eligibility and pricing adjustments.

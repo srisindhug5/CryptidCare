@@ -1,6 +1,6 @@
-using CryptidCare.Claims.Domain.Enums;
+using CryptidCare.Domain.Enums;
 
-namespace CryptidCare.Claims.Application.Models;
+namespace CryptidCare.Application.Models;
 
 /// <summary>
 /// Outcome returned after adjudication and persistence.

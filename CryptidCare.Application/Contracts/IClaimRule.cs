@@ -1,4 +1,4 @@
-namespace CryptidCare.Claims.Application.Contracts;
+namespace CryptidCare.Application.Contracts;
 
 /// <summary>
 /// Pluggable adjudication rule. Implementations are registered in DI and run in order.

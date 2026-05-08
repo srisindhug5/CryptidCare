@@ -1,4 +1,4 @@
-namespace CryptidCare.Claims.Application.Contracts;
+namespace CryptidCare.Application.Contracts;
 
 /// <summary>
 /// Applies species-specific quantity adjustments after all reject rules succeed.

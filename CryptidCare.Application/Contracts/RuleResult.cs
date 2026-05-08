@@ -1,6 +1,6 @@
-using CryptidCare.Claims.Domain.Enums;
+using CryptidCare.Domain.Enums;
 
-namespace CryptidCare.Claims.Application.Contracts;
+namespace CryptidCare.Application.Contracts;
 
 /// <summary>
 /// Outcome of a single claim rule evaluation.

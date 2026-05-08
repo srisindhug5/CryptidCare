@@ -1,6 +1,6 @@
-using CryptidCare.Claims.Domain.Enums;
+using CryptidCare.Domain.Enums;
 
-namespace CryptidCare.Claims.Domain.Entities;
+namespace CryptidCare.Domain.Entities;
 
 /// <summary>
 /// A pharmacy claim for a patient and medicine, with adjudication outcome and cost.

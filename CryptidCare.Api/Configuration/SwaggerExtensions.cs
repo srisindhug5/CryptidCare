@@ -1,8 +1,9 @@
 using System.Reflection;
+using CryptidCare.Api.Authentication;
 using Microsoft.OpenApi;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace CryptidCare.Claims.Api.Configuration;
+namespace CryptidCare.Api.Configuration;
 
 /// <summary>
 /// Registers OpenAPI / Swashbuckle for the Claims API.
@@ -31,9 +32,27 @@ public static class SwaggerExtensions
 
             options.CustomSchemaIds(type => type.FullName?.Replace("+", ".") ?? type.Name);
 
+            OpenApiSecurityScheme apiKeyScheme = new OpenApiSecurityScheme
+            {
+                Name = "X-Api-Key",
+                Type = SecuritySchemeType.ApiKey,
+                In = ParameterLocation.Header,
+                Description = "Pharmacy API key. Set via configuration key 'Authentication:ApiKey' (or env var 'Authentication__ApiKey'). Health endpoints do not require this header."
+            };
+            options.AddSecurityDefinition(ApiKeyAuthenticationOptions.SchemeName, apiKeyScheme);
+
+            // Apply the API key as a global security requirement so the Swagger UI's Authorize
+            // button automatically adds the X-Api-Key header to every "Try it out" call.
+            // Health endpoints aren't in the Swagger document (they're MapHealthChecks, not controllers),
+            // so the global requirement does not affect them.
+            options.AddSecurityRequirement(doc => new OpenApiSecurityRequirement
+            {
+                [new OpenApiSecuritySchemeReference(ApiKeyAuthenticationOptions.SchemeName, doc)] = []
+            });
+
             IncludeXmlCommentsIfPresent(options, Assembly.GetExecutingAssembly());
-            IncludeXmlCommentsIfPresent(options, "CryptidCare.Claims.Application.xml");
-            IncludeXmlCommentsIfPresent(options, "CryptidCare.Claims.Domain.xml");
+            IncludeXmlCommentsIfPresent(options, "CryptidCare.Application.xml");
+            IncludeXmlCommentsIfPresent(options, "CryptidCare.Domain.xml");
         });
 
         return services;

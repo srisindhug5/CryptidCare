@@ -1,9 +1,9 @@
 using AutoMapper;
-using CryptidCare.Claims.Api.Controllers;
-using CryptidCare.Claims.Application.Models;
-using CryptidCare.Claims.Domain.Entities;
+using CryptidCare.Api.Controllers;
+using CryptidCare.Application.Models;
+using CryptidCare.Domain.Entities;
 
-namespace CryptidCare.Claims.Api.Mapping;
+namespace CryptidCare.Api.Mapping;
 
 /// <summary>
 /// AutoMapper profile for API response DTOs. Keeps mapping rules out of controllers.

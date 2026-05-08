@@ -1,4 +1,4 @@
-namespace CryptidCare.Claims.Domain.Enums;
+namespace CryptidCare.Domain.Enums;
 
 /// <summary>
 /// Stable machine-readable reason for a rejected claim. Clients should branch on this value, not on free-form rejection text.

@@ -1,19 +1,21 @@
 using AutoMapper;
-using CryptidCare.Claims.Api.Models;
-using CryptidCare.Claims.Application.Abstractions;
-using CryptidCare.Claims.Application.Contracts;
-using CryptidCare.Claims.Application.Models;
-using CryptidCare.Claims.Domain.Entities;
-using CryptidCare.Claims.Domain.Enums;
+using CryptidCare.Api.Models;
+using CryptidCare.Application.Abstractions;
+using CryptidCare.Application.Contracts;
+using CryptidCare.Application.Models;
+using CryptidCare.Domain.Entities;
+using CryptidCare.Domain.Enums;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace CryptidCare.Claims.Api.Controllers;
+namespace CryptidCare.Api.Controllers;
 
 /// <summary>
 /// HTTP API for submitting claims and retrieving adjudication details including rule audit rows.
 /// </summary>
 [ApiController]
+[Authorize]
 [Route("api/[controller]")]
 [Produces("application/json")]
 public class ClaimsController(
@@ -35,6 +37,7 @@ public class ClaimsController(
     [ProducesResponseType(typeof(SubmitClaimResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(SubmitClaimResponse), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<ActionResult<SubmitClaimResponse>> SubmitClaimAsync(
         [FromBody] SubmitClaimHttpRequest request,
         CancellationToken cancellationToken)
@@ -55,6 +58,7 @@ public class ClaimsController(
     /// <returns>Full claim details or 404 when not found.</returns>
     [HttpGet("{claimId:guid}")]
     [ProducesResponseType(typeof(ClaimDetailsResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ClaimDetailsResponse>> GetClaimAsync(Guid claimId, CancellationToken cancellationToken)
     {

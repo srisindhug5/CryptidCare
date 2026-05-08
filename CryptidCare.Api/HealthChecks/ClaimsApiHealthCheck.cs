@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
-namespace CryptidCare.Claims.Api.HealthChecks;
+namespace CryptidCare.Api.HealthChecks;
 
 /// <summary>
 /// Health check for the Claims API application.
@@ -38,12 +38,3 @@ public class ClaimsApiHealthCheck : IHealthCheck
         }
     }
 }
-
-/// <summary>
-/// Extended health checks endpoint response with detailed diagnostic information.
-/// </summary>
-public record HealthCheckResponse(
-    string Status,
-    DateTime Timestamp,
-    Dictionary<string, object> Checks,
-    string? Environment = null);

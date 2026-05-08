@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CryptidCare.Claims.Api.Models;
+namespace CryptidCare.Api.Models;
 
 /// <summary>
 /// Request body for claim submission. Invalid payloads fail at the API layer (400) before adjudication or persistence.

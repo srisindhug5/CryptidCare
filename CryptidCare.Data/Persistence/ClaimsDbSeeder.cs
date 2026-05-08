@@ -1,7 +1,7 @@
-using CryptidCare.Claims.Domain.Entities;
-using CryptidCare.Claims.Domain.Enums;
+using CryptidCare.Domain.Entities;
+using CryptidCare.Domain.Enums;
 
-namespace CryptidCare.Claims.Data.Persistence;
+namespace CryptidCare.Data.Persistence;
 
 /// <summary>
 /// Inserts demo patients and medicines when the database is empty (local development convenience).

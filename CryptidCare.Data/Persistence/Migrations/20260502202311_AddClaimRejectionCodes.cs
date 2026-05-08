@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace CryptidCare.Claims.Data.Persistence.Migrations
+namespace CryptidCare.Data.Persistence.Migrations
 {
     /// <inheritdoc />
     public partial class AddClaimRejectionCodes : Migration

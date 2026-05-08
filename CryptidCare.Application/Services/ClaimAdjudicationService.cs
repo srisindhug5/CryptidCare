@@ -1,11 +1,11 @@
-using CryptidCare.Claims.Application.Abstractions;
-using CryptidCare.Claims.Application.Contracts;
-using CryptidCare.Claims.Application.Models;
-using CryptidCare.Claims.Domain.Entities;
-using CryptidCare.Claims.Domain.Enums;
+using CryptidCare.Application.Abstractions;
+using CryptidCare.Application.Contracts;
+using CryptidCare.Application.Models;
+using CryptidCare.Domain.Entities;
+using CryptidCare.Domain.Enums;
 using Microsoft.Extensions.Logging;
 
-namespace CryptidCare.Claims.Application.Services;
+namespace CryptidCare.Application.Services;
 
 /// <summary>
 /// Default implementation: load entities, run rules, apply adjusters, compute cost, persist claim.

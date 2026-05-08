@@ -1,7 +1,7 @@
-using CryptidCare.Claims.Application.Contracts;
-using CryptidCare.Claims.Domain.Enums;
+using CryptidCare.Application.Contracts;
+using CryptidCare.Domain.Enums;
 
-namespace CryptidCare.Claims.Application.Rules;
+namespace CryptidCare.Application.Rules;
 
 /// <summary>
 /// Ensures Hydra patients have a valid head count before quantity adjustment.

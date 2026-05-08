@@ -1,6 +1,6 @@
 using System.Diagnostics;
 
-namespace CryptidCare.Claims.Api.Middleware;
+namespace CryptidCare.Api.Middleware;
 
 /// <summary>
 /// Ensures every request has a correlation id for tracing (header <see cref="HeaderName"/> or generated)

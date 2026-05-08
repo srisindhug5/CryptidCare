@@ -1,9 +1,9 @@
-using CryptidCare.Claims.Application.Abstractions;
-using CryptidCare.Claims.Domain.Entities;
-using CryptidCare.Claims.Data.Persistence;
+using CryptidCare.Application.Abstractions;
+using CryptidCare.Domain.Entities;
+using CryptidCare.Data.Persistence;
 using Microsoft.EntityFrameworkCore;
 
-namespace CryptidCare.Claims.Data.Repositories;
+namespace CryptidCare.Data.Repositories;
 
 /// <summary>
 /// EF Core implementation of <see cref="IClaimRepository"/>.
